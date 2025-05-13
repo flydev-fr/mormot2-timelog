@@ -1,0 +1,93 @@
+# .github/workflows/ci.yml 
+name: Node.js CI, Test, Build & Publish
+
+on:
+  push:
+    branches:
+      - main 
+    tags:
+      - 'v*' 
+  pull_request:
+    branches:
+      - main 
+
+jobs:
+  build-and-test:
+    name: Build & Test (Node ${{ matrix.node-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x, 22.x] 
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+      - name: Build library
+        run: npm run build
+
+      - name: Archive production artifacts
+        if: matrix.node-version == '20.x'
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-artifacts
+          path: dist/
+
+  publish-npm:
+    name: Publish to NPM
+    needs: build-and-test 
+    runs-on: ubuntu-latest
+    
+    if: startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 
+
+      - name: Download dist artifacts 
+        uses: actions/download-artifact@v4
+        with:
+          name: dist-artifacts
+          path: dist 
+
+      - name: Use Node.js for Publishing
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x' 
+          cache: 'npm' 
+      
+      - name: Publish to NPM with JS-DevTools
+        uses: JS-DevTools/npm-publish@v3
+        with:
+          access: public 
+          token: ${{ secrets.NPM_TOKEN }}
+          
+      - name: Install devDependencies (pour lire package.json par l'action)
+        run: npm ci --omit=dev      
+          
+      - name: Print Publish Output (Optionnel)
+        if: steps.publish.outputs.type
+        run: |
+          echo "NPM Publish Action Output:"
+          echo "ID: ${{ steps.publish.outputs.id }}"
+          echo "Type: ${{ steps.publish.outputs.type }}"
+          echo "Version: ${{ steps.publish.outputs.version }}"
+          echo "Old Version: ${{ steps.publish.outputs.old-version }}"
+          echo "Tag: ${{ steps.publish.outputs.tag }}"
+          echo "Access: ${{ steps.publish.outputs.access }}"
+          echo "Registry: ${{ steps.publish.outputs.registry }}"
+          echo "Dry Run: ${{ steps.publish.outputs.dry-run }}"

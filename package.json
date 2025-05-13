@@ -1,0 +1,42 @@
+{
+  "name": "mormot2-timelog",
+  "version": "1.0.0",
+  "description": "JavaScript module for converting mORMot2 TTimeLog values to/from JS Date objects and ISO strings.",
+  "license": "MIT",
+  "author": "j. eizmendi",
+  "type": "module",
+  "main": "dist/mormot2-timelog.umd.js",
+  "module": "dist/mormot2-timelog.esm.js",
+  "scripts": {
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "build": "rollup -c",
+    "prepublishOnly": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/flydev-fr/mormot2-timelog.git"
+  },
+  "bugs": {
+    "url": "https://github.com/flydev-fr/mormot2-timelog/issues"
+  },
+  "homepage": "https://github.com/flydev-fr/mormot2-timelog#readme",
+  "keywords": [
+    "mormot",
+    "mormot2",
+    "timelog",
+    "javascript",
+    "date",
+    "conversion",
+    "int64"
+  ],
+  "devDependencies": {
+    "@babel/core": "^7.27.1",
+    "@babel/preset-env": "^7.27.2",
+    "@rollup/plugin-babel": "^6.0.4",
+    "@rollup/plugin-commonjs": "^28.0.3",
+    "@rollup/plugin-node-resolve": "^16.0.1",
+    "@rollup/plugin-terser": "^0.4.4",
+    "jest": "^29.7.0",
+    "rollup": "^4.40.2"
+  }
+}
