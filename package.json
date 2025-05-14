@@ -1,6 +1,6 @@
 {
   "name": "mormot2-timelog",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "JavaScript module for converting mORMot2 TTimeLog values to/from JS Date objects and ISO strings.",
   "license": "MIT",
   "author": "j. eizmendi",
